@@ -1,61 +1,42 @@
-<!-- <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>US COVID-19 Map</title>
-    <script src="https://d3js.org/d3.v5.min.js"></script>
-</head>
-<style>
-    .state-boundary {
-        fill: none;
-        stroke: #000; /* Black color */
-        stroke-width: 1; /* Adjust the width as needed */
-    }
-</style>
-<body>
-    <div id="map-container"></div>
-    <script src="script.js"></script>
-</body>
-</html> -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<style type="text/css">
+    <meta charset="utf-8">
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <style type="text/css">
+        /* On mouse hover, lighten state color */
+        path:hover {
+            fill-opacity: .7;
+        }
 
-/* On mouse hover, lighten state color */
-path:hover {
-	fill-opacity: .7;
-}
+        /* Style for Custom Tooltip */
+        div.tooltip {
+            position: absolute;
+            text-align: center;
+            width: 60px;
+            height: 28px;
+            padding: 2px;
+            font: 12px sans-serif;
+            background: white;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
 
-/* Style for Custom Tooltip */
-div.tooltip {   
- 	position: absolute;           
-	text-align: center;           
-	width: 60px;                  
-	height: 28px;                 
-	padding: 2px;             
-	font: 12px sans-serif;        
-	background: white;   
-	border: 0px;      
-	border-radius: 8px;           
-	pointer-events: none;         
-}
-        
-/* Legend Font Style */
-body {
-	font: 11px sans-serif;
-}
-        
-/* Legend Position Style */
-.legend {
-	position:absolute;
-	left:800px;
-	top:350px;
-}
-
-</style>
+        /* Style for Data Display */
+        div.data-display {
+            position: absolute;
+            text-align: left;
+            width: 200px;
+            height: 100px;
+            padding: 10px;
+            font: 12px sans-serif;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
     <div id="map-container"></div>
