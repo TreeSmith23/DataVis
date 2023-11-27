@@ -3,16 +3,16 @@ var width = 960;
 var height = 500;
 
 // D3 Projection
-var projection = d3.geo.albersUsa()
+var projection = d3.geoAlbers()
     .translate([width/2, height/2])    // translate to the center of the screen
     .scale([1000]);          // scale things down to see the entire US
 
 // Define path generator
-var path = d3.geo.path()               // path generator that will convert GeoJSON to SVG paths
+var path = d3.geoPath()               // path generator that will convert GeoJSON to SVG paths
     .projection(projection);  // tell the path generator to use the albersUsa projection
 
 // Define linear scale for output
-var color = d3.scale.linear()
+var color = d3.scaleLinear()
     .range(["rgb(213,222,217)","rgb(69,173,168)","rgb(84,36,55)","rgb(217,91,67)"]);
 
 // Create SVG element and append the map to the SVG
@@ -38,6 +38,11 @@ var title = d3.select("#map-container")
     .append("h1")
     .text("Interactive COVID-19 Map")
     .style("text-align", "center");
+
+var graphContainer = d3.select("#map-container")
+    .append("div")
+    .attr("id", "graph-container")
+    .style("opacity", 0);
 
 const dataDict = {};
 
@@ -73,8 +78,8 @@ class State {
     }
 }
 
-d3.json("us-states.json", function(json) {
-
+d3.json("us-states.json").then(function(json) {
+    console.log("HEREE");
     // Bind the data to the SVG and create one path per GeoJSON feature
     svg.selectAll("path")
         .data(json.features)
@@ -89,7 +94,6 @@ d3.json("us-states.json", function(json) {
         .on("mouseover", function(d) {
             var stateName = d.properties.name; // Get the state name
             var stateData = dataDict[stateName]; // Access the COVID-19 data
-
             // Get the bounding box of the state
             var bbox = this.getBBox();
 
@@ -111,6 +115,19 @@ d3.json("us-states.json", function(json) {
             d3.select(this)
                 .style("fill", "orange"); // Change the fill color when hovering
         })
+        .on("click", function (d) {
+            var stateName = d.properties.name; // Get the state name
+            var stateData = dataDict[stateName]; // Access the COVID-19 data for the state
+    
+            // Create a sample graph using dummy data (replace this with your actual graph implementation)
+            var graphData = [
+                { date: "2023-01-01", cases: 100 },
+                { date: "2023-02-01", cases: 150 },
+            ];
+    
+            // Update the content of the graph container
+            updateGraph(graphData, stateName);
+        })
         // Add mouseout event
         .on("mouseout", function(d) {
             d3.select(this)
@@ -121,7 +138,8 @@ d3.json("us-states.json", function(json) {
         });
 });
 
-d3.csv("data.csv", function(data) {
+
+d3.csv("data.csv").then(function(data) {
     for (var i = 0; i < data.length; i++) {
         dataDict[data[i].State] = new State(data[i].State, data[i].TotalCases, data[i].TotalDeaths, data[i].TotalRecovered, data[i].ActiveCases);
         dataDict[data[i].State].print();
@@ -130,7 +148,7 @@ d3.csv("data.csv", function(data) {
 });
 
 // Additional CSV file
-d3.csv("total.csv", function(data) {
+d3.csv("total.csv").then(function(data) {
     // Display USA Total data below the map
     var usaTotalDiv = d3.select("#map-container")
         .append("div")
@@ -144,3 +162,51 @@ d3.csv("total.csv", function(data) {
         "<strong>Total Recovered:</strong> " + data[0].TotalRecovered + "<br>" +
         "<strong>Active Cases:</strong> " + data[0].ActiveCases);
 });
+
+function updateGraph(data, stateName) {
+    graphContainer.html("<h3>COVID-19 Data for " + stateName + "</h3>");
+
+    var margin = { top: 20, right: 20, bottom: 30, left: 50 };
+    var width = 250 - margin.left - margin.right;
+    var height = 300 - margin.top - margin.bottom;
+
+    var svg2 = d3.select("#graph-container")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Define scales
+    var xScale = d3.scaleBand()
+        .domain(data.map(function (d) { return d.date; }))
+        .range([0, width])
+        .padding(0.1);
+
+    var yScale = d3.scaleLinear()
+        .domain([0, d3.max(data, function (d) { return d.cases; })])
+        .range([height, 0]);
+
+    // Create bars
+    svg2.selectAll(".bar")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function (d) { return xScale(d.date); })
+        .attr("width", xScale.bandwidth())
+        .attr("y", function (d) { return yScale(d.cases); })
+        .attr("height", function (d) { return height - yScale(d.cases); });
+
+    // Add axes
+    svg2.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(xScale));
+
+    svg2.append("g")
+        .call(d3.axisLeft(yScale));
+
+    // Adjust opacity to show the graph container
+    graphContainer.style("opacity", 1);
+
+}
+
