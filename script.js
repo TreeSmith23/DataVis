@@ -45,6 +45,7 @@ var graphContainer = d3.select("#map-container")
     .style("opacity", 0);
 
 const dataDict = {};
+const outputDic = {};
 
 class State {
     constructor(name, totalCases, totalDeaths, totalRecovered, activeCases) {
@@ -75,6 +76,15 @@ class State {
         console.log(this.totalDeaths);
         console.log(this.totalRecovered);
         console.log(this.activeCases);
+    }
+}
+
+class outputCase {
+    constructor(date1, date2, date3, date4) {
+        this.date1 = date1;
+        this.date2 = date2;
+        this.date3 = date3;
+        this.date4 = date4;
     }
 }
 
@@ -118,11 +128,14 @@ d3.json("us-states.json").then(function(json) {
         .on("click", function (d) {
             var stateName = d.properties.name; // Get the state name
             var stateData = dataDict[stateName]; // Access the COVID-19 data for the state
+            console.log(outputDic[stateName].date1);
     
             // Create a sample graph using dummy data (replace this with your actual graph implementation)
             var graphData = [
-                { date: "2023-01-01", cases: 100 },
-                { date: "2023-02-01", cases: 150 },
+                { date: "2020-06-01", cases: outputDic[stateName].date1 },
+                { date: "2021-06-01", cases: outputDic[stateName].date2 },
+                { date: "2022-06-01", cases: outputDic[stateName].date3 },
+                { date: "2023-06-01", cases: outputDic[stateName].date4 }
             ];
     
             // Update the content of the graph container
@@ -146,6 +159,16 @@ d3.csv("data.csv").then(function(data) {
         console.log("-");
     }
 });
+
+d3.csv("output_cases.csv").then(function(data) {
+    for (var i = 0; i < data.length; i++) {
+        outputDic[data[i].State] = new outputCase(data[i]['6/1/2020'], data[i]['6/1/2021'], data[i]['6/1/2022'], data[i]['6/1/2021']);
+        console.log("Debug");
+        console.log(data[i].State);
+        console.log(data[i]['1/1/2021']);
+    }
+});
+
 
 // Additional CSV file
 d3.csv("total.csv").then(function(data) {
