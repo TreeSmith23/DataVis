@@ -137,6 +137,8 @@ d3.json("us-states.json").then(function(json) {
                 { date: "2022", cases: outputDic[stateName].date3 },
                 { date: "2023", cases: outputDic[stateName].date4 }
             ];
+
+
     
             // Update the content of the graph container
             let graphName = stateName + " for June 1";
