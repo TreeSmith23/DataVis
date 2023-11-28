@@ -132,14 +132,15 @@ d3.json("us-states.json").then(function(json) {
     
             // Create a sample graph using dummy data (replace this with your actual graph implementation)
             var graphData = [
-                { date: "2020-06-01", cases: outputDic[stateName].date1 },
-                { date: "2021-06-01", cases: outputDic[stateName].date2 },
-                { date: "2022-06-01", cases: outputDic[stateName].date3 },
-                { date: "2023-06-01", cases: outputDic[stateName].date4 }
+                { date: "2020", cases: outputDic[stateName].date1 },
+                { date: "2021", cases: outputDic[stateName].date2 },
+                { date: "2022", cases: outputDic[stateName].date3 },
+                { date: "2023", cases: outputDic[stateName].date4 }
             ];
     
             // Update the content of the graph container
-            updateGraph(graphData, stateName);
+            let graphName = stateName + " for June 1";
+            updateGraph(graphData, graphName);
         })
         // Add mouseout event
         .on("mouseout", function(d) {
